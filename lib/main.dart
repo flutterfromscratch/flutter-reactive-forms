@@ -122,161 +122,172 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          FormBuilderTextField(
-                            name: FIRST_NAME,
-                            decoration: InputDecoration(labelText: 'First Name'),
-                            validator: FormBuilderValidators.required(),
-                          ),
-                          FormBuilderTextField(
-                            name: LAST_NAME,
-                            decoration: InputDecoration(labelText: 'Last Name'),
-                            validator: FormBuilderValidators.required(),
-                          ),
-                          FormBuilderTextField(
-                            name: PHONE_NUMBER,
-                            validator: FormBuilderValidators.numeric(),
-                            decoration: InputDecoration(labelText: 'Phone number'),
-                            autovalidateMode: AutovalidateMode.always,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text('What kind of pet do you have?'),
-                          ),
-                          FormBuilderRadioGroup<PetType>(
-                            onChanged: (val) {
-                              print(val);
-                              setState(() {
-                                _petType = val;
-                              });
-                            },
-                            name: PET_CHOICE,
-                            validator: FormBuilderValidators.required(),
-                            orientation: OptionsOrientation.vertical,
-                            options: [
-                              ...PetType.values.map(
-                                (e) => FormBuilderFieldOption(
-                                  value: e,
-                                  child: Text(
-                                    describeEnum(e).replaceFirst(
-                                      describeEnum(e)[0],
-                                      describeEnum(e)[0].toUpperCase(),
+                      child: FormBuilder(
+                        key: _fbKey,
+                        child: Column(
+                          children: [
+                            FormBuilderTextField(
+                              name: FIRST_NAME,
+                              decoration: InputDecoration(labelText: 'First Name'),
+                              validator: FormBuilderValidators.required(),
+                            ),
+                            FormBuilderTextField(
+                              name: LAST_NAME,
+                              decoration: InputDecoration(labelText: 'Last Name'),
+                              validator: FormBuilderValidators.required(),
+                            ),
+                            FormBuilderTextField(
+                              name: PHONE_NUMBER,
+                              validator: FormBuilderValidators.numeric(),
+                              decoration: InputDecoration(labelText: 'Phone number'),
+                              autovalidateMode: AutovalidateMode.always,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text('What kind of pet do you have?'),
+                            ),
+                            FormBuilderRadioGroup<PetType>(
+                              onChanged: (val) {
+                                print(val);
+                                setState(() {
+                                  _fbKey.currentState?.patchValue({
+                                    QUESTION_ANSWER_1: '',
+                                    QUESTION_ANSWER_2: '',
+                                    QUESTION_ANSWER_3: '',
+                                  });
+                                  _petType = val;
+                                });
+                              },
+                              name: PET_CHOICE,
+                              validator: FormBuilderValidators.required(),
+                              orientation: OptionsOrientation.vertical,
+                              options: [
+                                ...PetType.values.map(
+                                  (e) => FormBuilderFieldOption(
+                                    value: e,
+                                    child: Text(
+                                      describeEnum(e).replaceFirst(
+                                        describeEnum(e)[0],
+                                        describeEnum(e)[0].toUpperCase(),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                            wrapDirection: Axis.vertical,
-                          ),
-                          Builder(
-                            builder: (context) {
-                              switch (_petType) {
-                                case PetType.cat:
-                                  return Column(
-                                    children: [
-                                      Text("Aw, it's a cat!"),
-                                      FormBuilderTextField(
-                                        name: QUESTION_ANSWER_1,
-                                        decoration: InputDecoration(labelText: 'Can we pat the cat?'),
-                                      ),
-                                      FormBuilderTextField(
-                                        name: QUESTION_ANSWER_2,
-                                        decoration: InputDecoration(labelText: 'Can we put a little outfit on it?'),
-                                      ),
-                                      FormBuilderTextField(
-                                        name: QUESTION_ANSWER_3,
-                                        decoration: InputDecoration(labelText: 'Does it like to jump in boxes?'),
-                                      ),
-                                    ],
-                                  );
-
-                                case PetType.dog:
-                                  return Column(
-                                    children: [
-                                      Text("Yay, a puppy! What's its details?"),
-                                      FormBuilderTextField(
-                                        name: QUESTION_ANSWER_1,
-                                        decoration: InputDecoration(labelText: 'Can we wash your dog?'),
-                                      ),
-                                      FormBuilderTextField(
-                                        name: QUESTION_ANSWER_2,
-                                        decoration: InputDecoration(labelText: 'What is your dogs favourite treat?'),
-                                      ),
-                                      FormBuilderTextField(
-                                        name: QUESTION_ANSWER_3,
-                                        decoration: InputDecoration(labelText: 'Is your dog okay with other dogs?'),
-                                      ),
-                                    ],
-                                  );
-
-                                case PetType.echidna:
-                                  return Column(
-                                    children: [
-                                      Text("It's a small spiky boi. Can you fill us in on some of the details?"),
-                                      FormBuilderTextField(
-                                        name: QUESTION_ANSWER_1,
-                                        decoration: InputDecoration(labelText: 'How spikey is the echidna?'),
-                                      ),
-                                      FormBuilderTextField(
-                                        name: QUESTION_ANSWER_2,
-                                        decoration: InputDecoration(labelText: 'Can we read the echidna a story?'),
-                                      ),
-                                      FormBuilderTextField(
-                                        name: QUESTION_ANSWER_3,
-                                        decoration: InputDecoration(labelText: 'Does it like leafy greens?'),
-                                      ),
-                                    ],
-                                  );
-                                case null:
-                                  {
-                                    return Text('Please choose your pet type from above');
-                                  }
-                              }
-                            },
-                          ),
-                          ElevatedButton(
-                              onPressed: () {
-                                final valid = _fbKey.currentState?.saveAndValidate() ?? false;
-                                if (!valid) {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => SimpleDialog(
-                                            contentPadding: EdgeInsets.all(20),
-                                            title: Text('Please check the form'),
-                                            children: [Text('Some details are missing or incorrect. Please check the details and try again.')],
-                                          ));
-                                } else {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => SimpleDialog(
-                                      contentPadding: EdgeInsets.all(20),
-                                      title: Text("All done!"),
+                              ],
+                              wrapDirection: Axis.vertical,
+                            ),
+                            Builder(
+                              builder: (context) {
+                                switch (_petType) {
+                                  case PetType.cat:
+                                    return Column(
                                       children: [
-                                        Text(
-                                          "Thanks for all the details! We're going to check your pet in with the following details.",
-                                          style: Theme.of(context).textTheme.caption,
+                                        Text("Aw, it's a cat!"),
+                                        FormBuilderTextField(
+                                          name: QUESTION_ANSWER_1,
+                                          decoration: InputDecoration(labelText: 'Can we pat the cat?'),
                                         ),
-                                        Card(
-                                          child: Column(
-                                            children: [
-                                              Text('First name: ${_fbKey.currentState!.value[FIRST_NAME]}'),
-                                              Text('Last name: ${_fbKey.currentState!.value[LAST_NAME]}'),
-                                              Text('Number: ${_fbKey.currentState!.value[PHONE_NUMBER]}'),
-                                              Text('Pet type: ${_fbKey.currentState!.value[PET_CHOICE]}'),
-                                              Text('Response 1: ${_fbKey.currentState!.value[QUESTION_ANSWER_1]}'),
-                                              Text('Response 2: ${_fbKey.currentState!.value[QUESTION_ANSWER_2]}'),
-                                              Text('Response 3: ${_fbKey.currentState!.value[QUESTION_ANSWER_3]}'),
-                                            ],
-                                          ),
-                                        )
+                                        FormBuilderTextField(
+                                          name: QUESTION_ANSWER_2,
+                                          decoration: InputDecoration(labelText: 'Can we put a little outfit on it?'),
+                                        ),
+                                        FormBuilderTextField(
+                                          name: QUESTION_ANSWER_3,
+                                          decoration: InputDecoration(labelText: 'Does it like to jump in boxes?'),
+                                        ),
                                       ],
-                                    ),
-                                  );
+                                    );
+
+                                  case PetType.dog:
+                                    return Column(
+                                      children: [
+                                        Text("Yay, a puppy! What's its details?"),
+                                        FormBuilderTextField(
+                                          name: QUESTION_ANSWER_1,
+                                          decoration: InputDecoration(labelText: 'Can we wash your dog?'),
+                                        ),
+                                        FormBuilderTextField(
+                                          name: QUESTION_ANSWER_2,
+                                          decoration: InputDecoration(labelText: 'What is your dog\'s favorite treat?'),
+                                        ),
+                                        FormBuilderTextField(
+                                          name: QUESTION_ANSWER_3,
+                                          decoration: InputDecoration(labelText: 'Is your dog okay with other dog\'s?'),
+                                        ),
+                                      ],
+                                    );
+
+                                  case PetType.echidna:
+                                    return Column(
+                                      children: [
+                                        Text("It's a small spiky boi. Can you fill us in on some of the details?"),
+                                        FormBuilderTextField(
+                                          name: QUESTION_ANSWER_1,
+                                          decoration: InputDecoration(labelText: 'How spikey is the echidna?'),
+                                        ),
+                                        FormBuilderTextField(
+                                          name: QUESTION_ANSWER_2,
+                                          decoration: InputDecoration(labelText: 'Can we read the echidna a story?'),
+                                        ),
+                                        FormBuilderTextField(
+                                          name: QUESTION_ANSWER_3,
+                                          decoration: InputDecoration(labelText: 'Does it like leafy greens?'),
+                                        ),
+                                      ],
+                                    );
+                                  case null:
+                                    {
+                                      return Text('Please choose your pet type from above');
+                                    }
                                 }
                               },
-                              child: Text('REGISTER'))
-                        ],
+                            ),
+                            ElevatedButton(
+                                onPressed: () {
+                                  final valid = _fbKey.currentState?.saveAndValidate() ?? false;
+                                  if (!valid) {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) => SimpleDialog(
+                                              contentPadding: EdgeInsets.all(20),
+                                              title: Text('Please check the form'),
+                                              children: [
+                                                Text(
+                                                    'Some details are missing or incorrect. Please check the details and try again.')
+                                              ],
+                                            ));
+                                  } else {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => SimpleDialog(
+                                        contentPadding: EdgeInsets.all(20),
+                                        title: Text("All done!"),
+                                        children: [
+                                          Text(
+                                            "Thanks for all the details! We're going to check your pet in with the following details.",
+                                            style: Theme.of(context).textTheme.caption,
+                                          ),
+                                          Card(
+                                            child: Column(
+                                              children: [
+                                                Text('First name: ${_fbKey.currentState!.value[FIRST_NAME]}'),
+                                                Text('Last name: ${_fbKey.currentState!.value[LAST_NAME]}'),
+                                                Text('Number: ${_fbKey.currentState!.value[PHONE_NUMBER]}'),
+                                                Text('Pet type: ${_fbKey.currentState!.value[PET_CHOICE]}'),
+                                                Text('Response 1: ${_fbKey.currentState!.value[QUESTION_ANSWER_1]}'),
+                                                Text('Response 2: ${_fbKey.currentState!.value[QUESTION_ANSWER_2]}'),
+                                                Text('Response 3: ${_fbKey.currentState!.value[QUESTION_ANSWER_3]}'),
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: Text('REGISTER'))
+                          ],
+                        ),
                       ),
                     ),
                   ),
